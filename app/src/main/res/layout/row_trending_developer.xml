@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+        xmlns:bind="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+                name="developer"
+                type="com.appstreet.topgithub.model.TrendingDeveloper" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="4dp">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorListBG"
+            android:orientation="horizontal"
+            android:padding="@dimen/dp_10">
+
+
+        <ImageView android:layout_width="@dimen/avatar_width"
+                   android:layout_height="@dimen/avatar_height"
+                   android:src="@mipmap/ic_launcher"
+                   android:id="@+id/ivAvatar"/>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/dp_5"
+                android:orientation="vertical">
+
+            <TextView android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/tvUserName"
+                      style="@style/TextStyleMedium"
+                      android:padding="@dimen/dp_3"
+                      android:lines="1"
+                      android:ellipsize="end"
+                      android:text="{@developer.username}"/>
+
+            <TextView android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:id="@+id/tvRepoName"
+                      style="@style/TextStyleSmall"
+                      android:padding="@dimen/dp_3"
+                      android:text="{@developer.username}"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
+</layout>
