@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Top-Github</string>
+    <string name="internet_connection_error_message">Internet connection is not available.</string>
+    <string name="no_developers_found">No Developers Found</string>
 </resources>

@@ -1,9 +1,7 @@
-package com.appstreet.topgithub.network
+package com.appstreet.topgithub.webapi
 
 import com.appstreet.topgithub.model.TrendingDeveloper
 import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
 

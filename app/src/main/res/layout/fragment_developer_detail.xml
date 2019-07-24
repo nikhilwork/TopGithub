@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable name="developer" type="com.appstreet.topgithub.model.TrendingDeveloper"/>
+    </data>
+
+    <ScrollView android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorListBG"
+                android:focusable="true"
+                android:clickable="true"
+                android:scrollbars="none">
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            <ImageView android:layout_width="@dimen/large_avatar_width"
+                       android:layout_height="@dimen/large_avatar_width"
+                       android:src="@mipmap/ic_launcher"
+                       android:layout_gravity="center"
+                       android:layout_margin="@dimen/dp_10"
+                       android:id="@+id/ivAvatar"/>
+
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:padding="@dimen/dp_5">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_5"
+                        style="@style/TextStyleMedium"
+                        android:text="Username -"/>
+
+                <TextView android:layout_width="0dp"
+                          android:layout_weight="1"
+                          android:padding="@dimen/dp_5"
+                          style="@style/TextStyleMedium"
+                          android:id="@+id/tvUsername"
+                          android:textStyle="bold"
+                          android:text="@{developer.username}"
+                          android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:padding="@dimen/dp_5">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_5"
+                        style="@style/TextStyleMedium"
+                        android:text="Name -"/>
+
+                <TextView android:layout_width="0dp"
+                          android:layout_weight="1"
+                          android:padding="@dimen/dp_5"
+                          style="@style/TextStyleMedium"
+                          android:id="@+id/tvName"
+                          android:text="@{developer.name}"
+                          android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:padding="@dimen/dp_5">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_5"
+                        style="@style/TextStyleMedium"
+                        android:text="URL -"/>
+
+                <TextView android:layout_width="0dp"
+                          android:layout_weight="1"
+                          android:padding="@dimen/dp_5"
+                          style="@style/TextStyleMedium"
+                          android:id="@+id/tvUrl"
+                          android:autoLink="web"
+                          android:text="@{developer.url}"
+                          android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/dp_5"
+                    android:gravity="center"
+                    style="@style/TextStyleMedium"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    android:text="**** Repository Desciption ****"/>
+
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:padding="@dimen/dp_5">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_5"
+                        style="@style/TextStyleMedium"
+                        android:text="Name -"/>
+
+                <TextView android:layout_width="0dp"
+                          android:layout_weight="1"
+                          android:padding="@dimen/dp_5"
+                          style="@style/TextStyleMedium"
+                          android:id="@+id/tvRepoName"
+                          android:textStyle="bold"
+                          android:text="@{developer.repo.name}"
+                          android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:padding="@dimen/dp_5">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_5"
+                        style="@style/TextStyleMedium"
+                        android:text="Desciption -"/>
+
+                <TextView android:layout_width="0dp"
+                          android:layout_weight="1"
+                          android:padding="@dimen/dp_5"
+                          style="@style/TextStyleMedium"
+                          android:text="@{developer.repo.description}"
+                          android:id="@+id/tvRepoDescription"
+                          android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:padding="@dimen/dp_5">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dp_5"
+                        style="@style/TextStyleMedium"
+                        android:text="URL -"/>
+
+                <TextView android:layout_width="0dp"
+                          android:layout_weight="1"
+                          android:padding="@dimen/dp_5"
+                          style="@style/TextStyleMedium"
+                          android:id="@+id/tvRepoURL"
+                          android:autoLink="web"
+                          android:text="@{developer.repo.url}"
+                          android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+    </ScrollView>
+</layout>

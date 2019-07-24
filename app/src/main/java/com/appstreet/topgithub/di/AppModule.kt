@@ -2,8 +2,8 @@ package com.appstreet.topgithub.di
 
 import android.app.Application
 import android.content.Context
-import com.appstreet.topgithub.network.WebApiInterface
-import com.appstreet.topgithub.ui.viewmodel.DevelopersRepository
+import com.appstreet.topgithub.webapi.WebApiInterface
+import com.appstreet.topgithub.model.DevelopersRepository
 import com.appstreet.topgithub.utils.AppConstants.Companion.HTTP_CONNECT_TIMEOUT
 import com.appstreet.topgithub.utils.AppConstants.Companion.HTTP_READ_TIMEOUT
 import dagger.Module
