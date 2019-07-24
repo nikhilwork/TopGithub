@@ -8,10 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.appstreet.topgithub.BR
 import com.appstreet.topgithub.R
 import com.appstreet.topgithub.model.TrendingDeveloper
+import com.appstreet.topgithub.ui.listener.FragmentCallListener
 import com.appstreet.topgithub.ui.listener.ItemClickListener
 
 
-class TrendingDevelopersListAdapter(private val developersList : List<TrendingDeveloper>): RecyclerView.Adapter<TrendingDevelopersListAdapter.MyViewHolder>(), ItemClickListener {
+class TrendingDevelopersListAdapter(private val developersList : List<TrendingDeveloper>, val fragmentCallListener : FragmentCallListener): RecyclerView.Adapter<TrendingDevelopersListAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemRowBinding: ViewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context),R.layout.row_trending_developer, parent, false)
@@ -26,15 +27,16 @@ class TrendingDevelopersListAdapter(private val developersList : List<TrendingDe
         holder.bind(developersList.get(position))
     }
 
-    inner class MyViewHolder(var itemRowBinding: ViewDataBinding) : RecyclerView.ViewHolder(itemRowBinding.getRoot()) {
+    inner class MyViewHolder(var itemRowBinding: ViewDataBinding) : RecyclerView.ViewHolder(itemRowBinding.getRoot()),ItemClickListener {
 
         fun bind(obj: Any) {
             itemRowBinding.setVariable(BR.developer, obj)
+            itemRowBinding.setVariable(BR.itemClickListener, this)
             itemRowBinding.executePendingBindings()
         }
-    }
 
-    override fun itemClicked(trendingDeveloper: TrendingDeveloper) {
-
+        override fun itemClicked(trendingDeveloper: TrendingDeveloper) {
+            fragmentCallListener.callFragment(trendingDeveloper)
+        }
     }
 }

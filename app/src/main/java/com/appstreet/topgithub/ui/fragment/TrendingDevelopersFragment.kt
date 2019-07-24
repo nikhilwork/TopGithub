@@ -16,9 +16,10 @@ import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_trending_developers.*
 import javax.inject.Inject
 import androidx.recyclerview.widget.DividerItemDecoration
+import com.appstreet.topgithub.ui.listener.FragmentCallListener
 
 
-class TrendingDevelopersFragment: DaggerFragment() {
+class TrendingDevelopersFragment(val fragmentCallListener: FragmentCallListener): DaggerFragment() {
     lateinit var viewModel : DeveloperViewModel
     @Inject
     internal lateinit var viewModelFactory: ViewModelFactory
@@ -46,12 +47,7 @@ class TrendingDevelopersFragment: DaggerFragment() {
     private fun setRecyclerViewAdapter() {
         val layoutManager = LinearLayoutManager(context)
         rvTrendingDevelopers.layoutManager = layoutManager
-        adapter = TrendingDevelopersListAdapter(developersList)
-        /*val dividerItemDecoration = DividerItemDecoration(
-            rvTrendingDevelopers.getContext(),
-            layoutManager.getOrientation()
-        )
-        rvTrendingDevelopers.addItemDecoration(dividerItemDecoration)*/
+        adapter = TrendingDevelopersListAdapter(developersList, fragmentCallListener)
         rvTrendingDevelopers.adapter = adapter
     }
 }
