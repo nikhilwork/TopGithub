@@ -10,10 +10,9 @@ import com.appstreet.topgithub.model.TrendingDeveloper
 
 class TrendingDevelopersListAdapter(private val developersList : List<TrendingDeveloper>): RecyclerView.Adapter<TrendingDevelopersListAdapter.MyViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val layoutInflater: LayoutInflater = LayoutInflater.from(parent.context)
+        val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.row_trending_developer, parent, false)
 
-        PostR
         return MyViewHolder(view)
     }
 
@@ -26,7 +25,6 @@ class TrendingDevelopersListAdapter(private val developersList : List<TrendingDe
     }
 
     inner class MyViewHolder(view: View): RecyclerView.ViewHolder(view){
-        private val binding: Post? = null
 
     }
 }
