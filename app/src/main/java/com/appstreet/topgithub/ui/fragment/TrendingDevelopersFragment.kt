@@ -47,11 +47,11 @@ class TrendingDevelopersFragment: DaggerFragment() {
         val layoutManager = LinearLayoutManager(context)
         rvTrendingDevelopers.layoutManager = layoutManager
         adapter = TrendingDevelopersListAdapter(developersList)
-        val dividerItemDecoration = DividerItemDecoration(
+        /*val dividerItemDecoration = DividerItemDecoration(
             rvTrendingDevelopers.getContext(),
             layoutManager.getOrientation()
         )
-        rvTrendingDevelopers.addItemDecoration(dividerItemDecoration)
+        rvTrendingDevelopers.addItemDecoration(dividerItemDecoration)*/
         rvTrendingDevelopers.adapter = adapter
     }
 }

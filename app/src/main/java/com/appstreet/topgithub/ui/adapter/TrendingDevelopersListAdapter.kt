@@ -1,20 +1,21 @@
 package com.appstreet.topgithub.ui.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
+import com.appstreet.topgithub.BR
 import com.appstreet.topgithub.R
 import com.appstreet.topgithub.model.TrendingDeveloper
+import com.appstreet.topgithub.ui.listener.ItemClickListener
 
 
-class TrendingDevelopersListAdapter(private val developersList : List<TrendingDeveloper>): RecyclerView.Adapter<TrendingDevelopersListAdapter.MyViewHolder>() {
+class TrendingDevelopersListAdapter(private val developersList : List<TrendingDeveloper>): RecyclerView.Adapter<TrendingDevelopersListAdapter.MyViewHolder>(), ItemClickListener {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val layoutInflater: LayoutInflater = LayoutInflater.from(parent.context)
-            .inflate(R.layout.row_trending_developer, parent, false)
-
-        PostR
-        return MyViewHolder(view)
+        val itemRowBinding: ViewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context),R.layout.row_trending_developer, parent, false)
+        return MyViewHolder(itemRowBinding)
     }
 
     override fun getItemCount(): Int {
@@ -22,11 +23,18 @@ class TrendingDevelopersListAdapter(private val developersList : List<TrendingDe
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        //Not needed right now
+        holder.bind(developersList.get(position))
     }
 
-    inner class MyViewHolder(view: View): RecyclerView.ViewHolder(view){
-        private val binding: Post? = null
+    inner class MyViewHolder(var itemRowBinding: ViewDataBinding) : RecyclerView.ViewHolder(itemRowBinding.getRoot()) {
+
+        fun bind(obj: Any) {
+            itemRowBinding.setVariable(BR.developer, obj)
+            itemRowBinding.executePendingBindings()
+        }
+    }
+
+    override fun itemClicked(trendingDeveloper: TrendingDeveloper) {
 
     }
 }
