@@ -1,27 +1,31 @@
 package com.appstreet.topgithub.ui.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import com.appstreet.topgithub.BR
 import com.appstreet.topgithub.R
 import com.appstreet.topgithub.model.TrendingDeveloper
-import com.appstreet.topgithub.ui.listener.FragmentCallListener
 import com.appstreet.topgithub.ui.listener.ItemClickListener
-import android.view.animation.AlphaAnimation
 import android.view.animation.ScaleAnimation
 import android.view.animation.Animation
+import android.widget.ImageView
+import com.appstreet.topgithub.databinding.RowTrendingDeveloperBinding
+import com.appstreet.topgithub.imagelib.ImageLibXCore
 
 
-class TrendingDevelopersListAdapter(val developersList : List<TrendingDeveloper>, val fragmentCallListener : FragmentCallListener): RecyclerView.Adapter<TrendingDevelopersListAdapter.MyViewHolder>() {
+class TrendingDevelopersListAdapter(
+    val developersList : List<TrendingDeveloper>,
+    private val imageLibXCore: ImageLibXCore,
+    val listener: ItemClickListener
+): RecyclerView.Adapter<TrendingDevelopersListAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val itemRowBinding: ViewDataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context),R.layout.row_trending_developer, parent, false)
+        val itemRowBinding: RowTrendingDeveloperBinding =
+            DataBindingUtil.inflate(LayoutInflater.from(parent.context),R.layout.row_trending_developer, parent, false)
         return MyViewHolder(itemRowBinding)
     }
 
@@ -34,16 +38,20 @@ class TrendingDevelopersListAdapter(val developersList : List<TrendingDeveloper>
         setScaleAnimation(holder.itemView)
     }
 
-    inner class MyViewHolder(var itemRowBinding: ViewDataBinding) : RecyclerView.ViewHolder(itemRowBinding.getRoot()),ItemClickListener {
+    inner class MyViewHolder(var itemRowBinding: RowTrendingDeveloperBinding) :
+        RecyclerView.ViewHolder(itemRowBinding.getRoot()),
+        ItemClickListener {
 
         fun bind(obj: Any) {
             itemRowBinding.setVariable(BR.developer, obj)
             itemRowBinding.setVariable(BR.itemClickListener, this)
             itemRowBinding.executePendingBindings()
+            itemRowBinding.ivAvatar.transitionName = "transition" + adapterPosition
+            developersList[adapterPosition].avatar?.let { imageLibXCore.loadBitmap(it, itemRowBinding.ivAvatar, R.mipmap.ic_launcher) }
         }
 
         override fun itemClicked(trendingDeveloper: TrendingDeveloper) {
-            fragmentCallListener.callFragment(trendingDeveloper)
+            listener.itemClicked(trendingDeveloper)
         }
     }
 

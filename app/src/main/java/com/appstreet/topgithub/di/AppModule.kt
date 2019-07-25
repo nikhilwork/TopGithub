@@ -2,6 +2,7 @@ package com.appstreet.topgithub.di
 
 import android.app.Application
 import android.content.Context
+import com.appstreet.topgithub.imagelib.ImageLibXCore
 import com.appstreet.topgithub.webapi.WebApiInterface
 import com.appstreet.topgithub.model.DevelopersRepository
 import com.appstreet.topgithub.utils.AppConstants.Companion.HTTP_CONNECT_TIMEOUT
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
 
-@Module
+@Module(includes = [(ViewModelModule::class)])
 class AppModule {
 
     @Singleton
@@ -87,6 +88,12 @@ class AppModule {
     @Singleton
     fun provideDevelopersRepository(webApiInterface: WebApiInterface): DevelopersRepository {
         return DevelopersRepository(webApiInterface)
+    }
+
+    @Provides
+    @Singleton
+    fun providesImageLibX(context: Context): ImageLibXCore {
+        return ImageLibXCore(context)
     }
 
 }
