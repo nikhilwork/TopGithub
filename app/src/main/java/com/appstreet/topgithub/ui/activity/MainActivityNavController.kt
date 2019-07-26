@@ -14,26 +14,24 @@ class MainActivityNavController @Inject constructor(var activity: MainActivity) 
     private val fm = activity.supportFragmentManager
 
     fun navigateToTrendingDevelopers() {
-        addFragment(TrendingDevelopersFragment.create())
+        addFragment(TrendingDevelopersFragment.create(), null)
     }
 
     /**
      * @param trendingDeveloper - trending developer object that will display on detail fragment
      */
-    fun navigateToDeveloperDetail(trendingDeveloper: TrendingDeveloper) {
-        addFragment(DeveloperDetailFragment.create(trendingDeveloper))
+    fun navigateToDeveloperDetail(trendingDeveloper: TrendingDeveloper, imageView: ImageView) {
+        addFragment(DeveloperDetailFragment.create(trendingDeveloper, imageView.transitionName,activity), imageView)
     }
 
     /**
      * A function to add a fragment in activity
      * @param fragment - the instance of fragment that need to add
      */
-    private fun addFragment(fragment: Fragment) {
+    private fun addFragment(fragment: Fragment, imageView: ImageView?) {
         val fragmentTransaction = fm.beginTransaction()
-        /*if (sharedElement!=null) {
-            fragmentTransaction.addSharedElement(sharedElement, sharedElement.transitionName)
-        }*/
-        fragmentTransaction.add(containerID, fragment, fragment::class.java.simpleName)
+        imageView?.let {fragmentTransaction.addSharedElement(it,it.transitionName)}
+        fragmentTransaction.replace(containerID, fragment, fragment::class.java.simpleName)
         fragmentTransaction.addToBackStack(fragment::class.java.simpleName)
         fragmentTransaction.commit()
     }

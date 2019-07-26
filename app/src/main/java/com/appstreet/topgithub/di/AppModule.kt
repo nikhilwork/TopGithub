@@ -7,6 +7,7 @@ import com.appstreet.topgithub.webapi.WebApiInterface
 import com.appstreet.topgithub.model.DevelopersRepository
 import com.appstreet.topgithub.utils.AppConstants.Companion.HTTP_CONNECT_TIMEOUT
 import com.appstreet.topgithub.utils.AppConstants.Companion.HTTP_READ_TIMEOUT
+import com.appstreet.topgithub.utils.InternetConnectionManager
 import dagger.Module
 import dagger.Provides
 import okhttp3.Interceptor
@@ -40,9 +41,9 @@ class AppModule {
     @Provides
     internal fun provideOkHttpClient(interceptor: Interceptor): OkHttpClient {
         return OkHttpClient.Builder().addInterceptor(interceptor)
-            .connectTimeout(HTTP_CONNECT_TIMEOUT.toLong(), TimeUnit.SECONDS)
-            .readTimeout(HTTP_READ_TIMEOUT.toLong(), TimeUnit.SECONDS)
-            .writeTimeout(HTTP_READ_TIMEOUT.toLong(), TimeUnit.SECONDS)
+            .connectTimeout(HTTP_CONNECT_TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(HTTP_READ_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(HTTP_READ_TIMEOUT, TimeUnit.SECONDS)
             .build()
     }
 
@@ -94,6 +95,12 @@ class AppModule {
     @Singleton
     fun providesImageLibX(context: Context): ImageLibXCore {
         return ImageLibXCore(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInternetConnectionManager(context: Context): InternetConnectionManager {
+        return InternetConnectionManager(context)
     }
 
 }

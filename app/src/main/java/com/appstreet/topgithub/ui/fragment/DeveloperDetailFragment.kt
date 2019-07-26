@@ -1,6 +1,7 @@
 package com.appstreet.topgithub.ui.fragment
 
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import com.appstreet.topgithub.R
 import com.appstreet.topgithub.databinding.FragmentDeveloperDetailBinding
 import com.appstreet.topgithub.imagelib.ImageLibXCore
 import com.appstreet.topgithub.model.TrendingDeveloper
+import com.appstreet.topgithub.ui.activity.MainActivity
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_developer_detail.*
 import javax.inject.Inject
@@ -20,10 +22,15 @@ class DeveloperDetailFragment: DaggerFragment() {
     lateinit var developer: TrendingDeveloper
     @Inject
     lateinit var imageLibXCore: ImageLibXCore
+    lateinit var transitionName: String
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        fragmentBinding= DataBindingUtil.inflate(inflater, R.layout.fragment_developer_detail, container, false);
+        fragmentBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_developer_detail, container, false);
         if (arguments?.containsKey(KEY_DEVELOPER_DETAIL)!!) {
-            arguments?.let { developer =  it.getParcelable(KEY_DEVELOPER_DETAIL)}
+            arguments?.let { developer = it.getParcelable(KEY_DEVELOPER_DETAIL) }
+        }
+        if (arguments?.containsKey(KEY_TRANSITION_NAME)!!) {
+            arguments?.let { transitionName = it.getString(KEY_TRANSITION_NAME) }
         }
         return fragmentBinding.root
     }
@@ -31,17 +38,27 @@ class DeveloperDetailFragment: DaggerFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fragmentBinding.developer = developer
-        developer.avatar?.let { imageLibXCore.loadBitmap(it, ivAvatar, R.mipmap.ic_launcher) }
+        fragmentBinding.ivAvatar.transitionName = transitionName
+        developer.avatar?.let { imageLibXCore.loadBitmap(it, fragmentBinding.ivAvatar, R.mipmap.ic_launcher) }
     }
 
     companion object {
 
         private const val KEY_DEVELOPER_DETAIL = "developer_detail"
-        private const val TRANSITION_NAME = "transition_name"
+        private const val KEY_TRANSITION_NAME = "transition_name"
 
-        fun create(trendingDeveloper: TrendingDeveloper) =
-            DeveloperDetailFragment().apply {
-                arguments = Bundle().apply { putParcelable(KEY_DEVELOPER_DETAIL, trendingDeveloper) }
+        fun create(trendingDeveloper: TrendingDeveloper, transitionName: String, activity: MainActivity): DeveloperDetailFragment {
+            val developerDetailFragment = DeveloperDetailFragment()
+            developerDetailFragment.apply {
+                arguments = Bundle()
+                    .apply {
+                        putString(KEY_TRANSITION_NAME, transitionName)
+                        putParcelable(KEY_DEVELOPER_DETAIL, trendingDeveloper)
+                    }
             }
+            developerDetailFragment.sharedElementEnterTransition = TransitionInflater.from(activity)
+                .inflateTransition(android.R.transition.move)
+            return developerDetailFragment
+        }
     }
 }

@@ -19,6 +19,8 @@ import com.appstreet.topgithub.ui.adapter.TrendingDevelopersListAdapter
 import com.appstreet.topgithub.ui.listener.ItemClickListener
 import com.appstreet.topgithub.ui.viewmodel.DeveloperViewModel
 import com.appstreet.topgithub.ui.viewmodel.ViewModelFactory
+import com.appstreet.topgithub.utils.AppConstants.Companion.LANGUAGE
+import com.appstreet.topgithub.utils.AppConstants.Companion.SINCE
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_trending_developers.*
 import javax.inject.Inject
@@ -34,11 +36,12 @@ class TrendingDevelopersFragment : DaggerFragment(), ItemClickListener {
     lateinit var imageLibXCore: ImageLibXCore
     var developersList = ArrayList<TrendingDeveloper>()
     lateinit var adapter: TrendingDevelopersListAdapter
+    var isAnimationNeeded = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(DeveloperViewModel::class.java)
-        viewModel.callDevelopersRepositoryApi("java", "weekly")
+        viewModel.callDevelopersRepositoryApi(LANGUAGE, SINCE)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -57,16 +60,18 @@ class TrendingDevelopersFragment : DaggerFragment(), ItemClickListener {
     private fun setRecyclerViewAdapter() {
         val layoutManager = LinearLayoutManager(context)
         rvTrendingDevelopers.layoutManager = layoutManager
-        adapter = TrendingDevelopersListAdapter(developersList, imageLibXCore, this)
+        adapter = TrendingDevelopersListAdapter(developersList, imageLibXCore, isAnimationNeeded, this)
         rvTrendingDevelopers.adapter = adapter
+        isAnimationNeeded = false
     }
 
     private fun handleResult(result: Resource<List<TrendingDeveloper>>) {
         when (result) {
             is Resource.Loading -> {
-
+                progressBar.visibility = View.VISIBLE
             }
             is Resource.Success -> {
+                progressBar.visibility = View.GONE
                 if (result.data != null) {
                     developersList.clear()
                     developersList.addAll(result.data)
@@ -80,14 +85,22 @@ class TrendingDevelopersFragment : DaggerFragment(), ItemClickListener {
                 }
             }
             is Resource.Error -> {
-                Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                progressBar.visibility = View.GONE
+                tvNoDataFound.visibility = View.VISIBLE
+                tvNoDataFound.text = result.message
+            }
+            is Resource.InternetError -> {
+                progressBar.visibility = View.GONE
+                tvNoDataFound.visibility = View.VISIBLE
+                tvNoDataFound.text = getString(result.resId)
             }
         }
     }
 
-    override fun itemClicked(trendingDeveloper: TrendingDeveloper) {
-        navController.navigateToDeveloperDetail(trendingDeveloper)
+    override fun itemClicked(trendingDeveloper: TrendingDeveloper, imageView: ImageView) {
+        navController.navigateToDeveloperDetail(trendingDeveloper, imageView)
     }
+
 
     companion object {
         fun create() =

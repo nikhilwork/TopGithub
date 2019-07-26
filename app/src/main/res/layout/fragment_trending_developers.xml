@@ -19,6 +19,7 @@
             style="@style/TextStyleLarge"
             android:id="@+id/tvNoDataFound"
             android:visibility="gone"
+            android:padding="@dimen/dp_5"
             android:layout_gravity="center"
             android:text="No Developers Found"/>
 

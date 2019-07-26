@@ -3,29 +3,30 @@ package com.appstreet.topgithub.imagelib
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import android.util.LruCache
 import android.widget.ImageView
 import com.appstreet.topgithub.imagecachelib.AppExecutors
 import com.jakewharton.disklrucache.DiskLruCache
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
+import java.lang.ref.WeakReference
 import java.net.URL
+import java.util.concurrent.Semaphore
 import java.util.concurrent.locks.Condition
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 class ImageLibXCore constructor(private val context: Context) {
 
-    private var memoryCache: LruCache<String, Bitmap>
+    private lateinit var memoryCache: LruCache<String, Bitmap>
     private val DISK_CACHE_SIZE = 1024 * 1024 * 10 // 10MB
     val IO_BUFFER_SIZE = 8 * 1024
     private val DISK_CACHE_SUBDIR = "thumbnails"
     private var diskLruCache: DiskLruCache? = null
-    private val diskCacheLock = ReentrantLock()
-    private val diskCacheLockCondition: Condition = diskCacheLock.newCondition()
+    private val lock = ReentrantLock()
+    private val diskCacheLockCondition: Condition = lock.newCondition()
     private var diskCacheStarting = true
+    private val semaphore = Semaphore(1)
 
     init {
         // Initializing LRU cache
@@ -41,7 +42,6 @@ class ImageLibXCore constructor(private val context: Context) {
         //Initializing DiskLRU cache
         val cacheDir = getDiskCacheDir(DISK_CACHE_SUBDIR)
         diskLruCache = DiskLruCache.open(cacheDir, 1, 1, DISK_CACHE_SIZE.toLong())
-
 
     }
 
@@ -68,40 +68,46 @@ class ImageLibXCore constructor(private val context: Context) {
         return File(path + File.separator + uniqueName)
     }
 
-    private fun getBitmapFromMemCache(key: String): Bitmap? {
-        return memoryCache.get(key)
-    }
+    private fun getBitmapFromMemCache(key: String): Bitmap? =
+        lock.withLock {
+            return memoryCache.get(key)
+        }
+
 
     private fun getBitmapFromDiskCache(key: String): Bitmap? =
-        diskCacheLock.withLock {
+        lock.withLock {
             val snapshot = diskLruCache?.get(key)
             val inputStream = snapshot?.getInputStream(0)
             return BitmapFactory.decodeStream(inputStream)
         }
 
     private fun bitmapWorkerTask(urlPath: String, imageView: ImageView, placeholderRes: Int) {
-        imageView.setImageResource(placeholderRes)
+
+        val weakReference = WeakReference<ImageView>(imageView)
+        weakReference.get()?.setImageResource(placeholderRes)
         AppExecutors.getInstance().networkIO().execute {
             var stream: InputStream? = null
             try {
                 stream = URL(urlPath).openConnection().getInputStream()
                 if (stream != null) {
 
-                   /* val options = BitmapFactory.Options().apply {
+                    val options = BitmapFactory.Options().apply {
                         inJustDecodeBounds = true
                         BitmapFactory.decodeStream(stream, null, this)
                         inSampleSize = calculateInSampleSize(this, 80, 80)
                         inJustDecodeBounds = false
-                    }*/
+                    }
+                    stream.close()
+                    stream = URL(urlPath).openConnection().getInputStream()
+                    val bitmap = BitmapFactory.decodeStream(stream, null, options)
 
-                    //val bitmap = BitmapFactory.decodeStream(stream, null, options)
+                    if (bitmap != null) {
+                        val key = urlPath.substringAfterLast("/").toLowerCase()
+                        addBitmapToCache(key, bitmap)
 
-                    val bitmap = BitmapFactory.decodeStream(stream)
-                    val key = urlPath.substringAfterLast("/").toLowerCase()
-                    addBitmapToCache(key, bitmap)
-
-                    AppExecutors.getInstance().mainThread().execute {
-                        imageView.setImageBitmap(bitmap)
+                        AppExecutors.getInstance().mainThread().execute {
+                            weakReference.get()?.setImageBitmap(bitmap)
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -125,7 +131,7 @@ class ImageLibXCore constructor(private val context: Context) {
     }
 
     private fun addBitmapToDiskCache(key: String, bitmap: Bitmap) {
-        synchronized(diskCacheLock) {
+        synchronized(lock) {
             diskLruCache?.apply {
                 val editor = edit(key)
                 var out: OutputStream? = null
