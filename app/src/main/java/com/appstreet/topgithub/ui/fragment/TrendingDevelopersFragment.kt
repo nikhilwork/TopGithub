@@ -32,9 +32,9 @@ class TrendingDevelopersFragment : DaggerFragment(), ItemClickListener {
     lateinit var navController: MainActivityNavController
     @Inject
     lateinit var imageLibXCore: ImageLibXCore
-    var developersList = ArrayList<TrendingDeveloper>()
-    lateinit var adapter: TrendingDevelopersListAdapter
-    var isAnimationNeeded = true
+    private var developersList = ArrayList<TrendingDeveloper>()
+    private lateinit var adapter: TrendingDevelopersListAdapter
+    private var isAnimationNeeded = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

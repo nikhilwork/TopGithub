@@ -16,10 +16,10 @@ import com.appstreet.topgithub.imagecachelib.ImageLibXCore
 
 
 class TrendingDevelopersListAdapter(
-    val developersList: List<TrendingDeveloper>,
+    private val developersList: List<TrendingDeveloper>,
     private val imageLibXCore: ImageLibXCore,
-    var isAnimationNeeded: Boolean,
-    val listener: ItemClickListener
+    private var isAnimationNeeded: Boolean,
+    private val listener: ItemClickListener
 ) : RecyclerView.Adapter<TrendingDevelopersListAdapter.MyViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val itemRowBinding: RowTrendingDeveloperBinding =

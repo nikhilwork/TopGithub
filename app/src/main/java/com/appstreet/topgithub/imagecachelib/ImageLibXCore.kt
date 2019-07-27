@@ -18,7 +18,7 @@ class ImageLibXCore constructor(private val context: Context) {
 
     private var memoryCache: LruCache<String, Bitmap>
     private val DISK_CACHE_SIZE = 1024 * 1024 * 10 // 10MB
-    val IO_BUFFER_SIZE = 8 * 1024
+    private val IO_BUFFER_SIZE = 8 * 1024
     private val DISK_CACHE_SUBDIR = "thumbnails"
     private var diskLruCache: DiskLruCache? = null
     private val lock = ReentrantLock()
@@ -39,6 +39,13 @@ class ImageLibXCore constructor(private val context: Context) {
 
     }
 
+    /**
+     * Load image bitmap in ImageView if stored in cache
+     * Else Download the image and store in disk and memory cache
+     * @param urlPath - image url
+     * @param imageView - ImageView in which image needs to load
+     * @param placeholderRes - Default place holder image resource
+     */
     fun loadBitmap(urlPath: String, imageView: ImageView, placeholderRes: Int) {
         //val key = urlPath.substringAfterLast("/").toLowerCase().substringBefore(".")
         val key = urlPath.substringAfterLast("/").toLowerCase()
@@ -58,17 +65,28 @@ class ImageLibXCore constructor(private val context: Context) {
         }
     }
 
+    /**
+     * Get the directory of disk cache
+     */
     private fun getDiskCacheDir(uniqueName: String): File {
         val path = context.cacheDir.path
         return File(path + File.separator + uniqueName)
     }
 
+    /**
+     * Get bitmap from Memory cache if stored
+     * @param key - Key name of bitmap
+     */
     private fun getBitmapFromMemCache(key: String): Bitmap? =
         lock.withLock {
             return memoryCache.get(key)
         }
 
 
+    /**
+     * Get bitmap from Disk cache if stored
+     * @param key - Key name of bitmap
+     */
     private fun getBitmapFromDiskCache(key: String): Bitmap? =
         lock.withLock {
             val snapshot = diskLruCache?.get(key)
@@ -76,6 +94,12 @@ class ImageLibXCore constructor(private val context: Context) {
             return BitmapFactory.decodeStream(inputStream)
         }
 
+    /**
+     * Download image and keep in memory and disk cache
+     * @param urlPath - image url
+     * @param imageView - ImageView in which image needs to load
+     * @param placeholderRes - Default place holder image resource
+     */
     private fun bitmapWorkerTask(urlPath: String, imageView: ImageView, placeholderRes: Int) {
 
         val weakReference = WeakReference(imageView)
@@ -122,11 +146,21 @@ class ImageLibXCore constructor(private val context: Context) {
         addBitmapToDiskCache(key, bitmap)
     }
 
+    /**
+     * Add bitmap to memory cache
+     * @param key - key value of bitmap
+     * @param bitmap - Bitmap of image
+     */
     @Synchronized
     private fun addBitmapToMemoryCache(key: String, bitmap: Bitmap) {
             memoryCache.put(key, bitmap)
     }
 
+    /**
+     * Add bitmap to disk cache
+     * @param key - key value of bitmap
+     * @param bitmap - Bitmap of image
+     */
     private fun addBitmapToDiskCache(key: String, bitmap: Bitmap) {
         synchronized(lock) {
             diskLruCache?.apply {
