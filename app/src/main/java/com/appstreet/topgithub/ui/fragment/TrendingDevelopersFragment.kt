@@ -1,17 +1,15 @@
 package com.appstreet.topgithub.ui.fragment
 
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.appstreet.topgithub.R
-import com.appstreet.topgithub.imagelib.ImageLibXCore
+import com.appstreet.topgithub.imagecachelib.ImageLibXCore
 import com.appstreet.topgithub.model.Resource
 import com.appstreet.topgithub.model.TrendingDeveloper
 import com.appstreet.topgithub.ui.activity.MainActivityNavController
@@ -103,9 +101,6 @@ class TrendingDevelopersFragment : DaggerFragment(), ItemClickListener {
 
 
     companion object {
-        fun create() =
-            TrendingDevelopersFragment().apply {
-                arguments = Bundle().apply {}
-            }
+        fun create() = TrendingDevelopersFragment()
     }
 }

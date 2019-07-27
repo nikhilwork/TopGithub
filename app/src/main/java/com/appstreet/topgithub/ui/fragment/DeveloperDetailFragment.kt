@@ -6,31 +6,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import com.appstreet.topgithub.R
 import com.appstreet.topgithub.databinding.FragmentDeveloperDetailBinding
-import com.appstreet.topgithub.imagelib.ImageLibXCore
+import com.appstreet.topgithub.imagecachelib.ImageLibXCore
 import com.appstreet.topgithub.model.TrendingDeveloper
 import com.appstreet.topgithub.ui.activity.MainActivity
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.fragment_developer_detail.*
 import javax.inject.Inject
 
 
-class DeveloperDetailFragment: DaggerFragment() {
-    lateinit var fragmentBinding : FragmentDeveloperDetailBinding
-    lateinit var developer: TrendingDeveloper
+class DeveloperDetailFragment : DaggerFragment() {
+
+    private lateinit var fragmentBinding: FragmentDeveloperDetailBinding
+    private lateinit var developer: TrendingDeveloper
     @Inject
     lateinit var imageLibXCore: ImageLibXCore
-    lateinit var transitionName: String
+    private var transitionName: String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        fragmentBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_developer_detail, container, false);
-        if (arguments?.containsKey(KEY_DEVELOPER_DETAIL)!!) {
-            arguments?.let { developer = it.getParcelable(KEY_DEVELOPER_DETAIL) }
-        }
-        if (arguments?.containsKey(KEY_TRANSITION_NAME)!!) {
-            arguments?.let { transitionName = it.getString(KEY_TRANSITION_NAME) }
+        fragmentBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_developer_detail, container, false)
+        arguments?.let {
+            if (it.containsKey(KEY_DEVELOPER_DETAIL)) {
+                developer = it.getParcelable(KEY_DEVELOPER_DETAIL)
+            }
+            if (it.containsKey(KEY_TRANSITION_NAME)) {
+                transitionName = it.getString(KEY_TRANSITION_NAME)
+            }
         }
         return fragmentBinding.root
     }
@@ -47,7 +48,11 @@ class DeveloperDetailFragment: DaggerFragment() {
         private const val KEY_DEVELOPER_DETAIL = "developer_detail"
         private const val KEY_TRANSITION_NAME = "transition_name"
 
-        fun create(trendingDeveloper: TrendingDeveloper, transitionName: String, activity: MainActivity): DeveloperDetailFragment {
+        fun create(
+            trendingDeveloper: TrendingDeveloper,
+            transitionName: String,
+            activity: MainActivity
+        ): DeveloperDetailFragment {
             val developerDetailFragment = DeveloperDetailFragment()
             developerDetailFragment.apply {
                 arguments = Bundle()

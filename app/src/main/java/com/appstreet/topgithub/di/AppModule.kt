@@ -2,7 +2,7 @@ package com.appstreet.topgithub.di
 
 import android.app.Application
 import android.content.Context
-import com.appstreet.topgithub.imagelib.ImageLibXCore
+import com.appstreet.topgithub.imagecachelib.ImageLibXCore
 import com.appstreet.topgithub.webapi.WebApiInterface
 import com.appstreet.topgithub.model.DevelopersRepository
 import com.appstreet.topgithub.utils.AppConstants.Companion.HTTP_CONNECT_TIMEOUT

@@ -1,12 +1,10 @@
-package com.appstreet.topgithub.imagelib
+package com.appstreet.topgithub.imagecachelib
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import android.util.LruCache
 import android.widget.ImageView
-import com.appstreet.topgithub.imagecachelib.AppExecutors
 import com.jakewharton.disklrucache.DiskLruCache
 import java.io.*
 import java.lang.ref.WeakReference
@@ -18,16 +16,12 @@ import kotlin.concurrent.withLock
 
 class ImageLibXCore constructor(private val context: Context) {
 
-    private lateinit var memoryCache: LruCache<String, Bitmap>
+    private var memoryCache: LruCache<String, Bitmap>
     private val DISK_CACHE_SIZE = 1024 * 1024 * 10 // 10MB
     val IO_BUFFER_SIZE = 8 * 1024
     private val DISK_CACHE_SUBDIR = "thumbnails"
     private var diskLruCache: DiskLruCache? = null
     private val lock = ReentrantLock()
-    private val diskCacheLockCondition: Condition = lock.newCondition()
-    private var diskCacheStarting = true
-    private val semaphore = Semaphore(1)
-
     init {
         // Initializing LRU cache
         val maxMemory = (Runtime.getRuntime().maxMemory() / 1024).toInt()
@@ -48,6 +42,7 @@ class ImageLibXCore constructor(private val context: Context) {
     fun loadBitmap(urlPath: String, imageView: ImageView, placeholderRes: Int) {
         //val key = urlPath.substringAfterLast("/").toLowerCase().substringBefore(".")
         val key = urlPath.substringAfterLast("/").toLowerCase()
+        imageView.tag = key
         var bitmap: Bitmap?
         bitmap = getBitmapFromMemCache(key)
         if (bitmap == null) {
@@ -56,10 +51,10 @@ class ImageLibXCore constructor(private val context: Context) {
                 bitmapWorkerTask(urlPath, imageView, placeholderRes)
             } else {
                 addBitmapToMemoryCache(key, bitmap)
-                imageView.setImageBitmap(bitmap)
+                if (imageView.tag == key) imageView.setImageBitmap(bitmap)
             }
         } else {
-            imageView.setImageBitmap(bitmap)
+            if (imageView.tag == key) imageView.setImageBitmap(bitmap)
         }
     }
 
@@ -83,7 +78,7 @@ class ImageLibXCore constructor(private val context: Context) {
 
     private fun bitmapWorkerTask(urlPath: String, imageView: ImageView, placeholderRes: Int) {
 
-        val weakReference = WeakReference<ImageView>(imageView)
+        val weakReference = WeakReference(imageView)
         weakReference.get()?.setImageResource(placeholderRes)
         AppExecutors.getInstance().networkIO().execute {
             var stream: InputStream? = null
@@ -94,7 +89,7 @@ class ImageLibXCore constructor(private val context: Context) {
                     val options = BitmapFactory.Options().apply {
                         inJustDecodeBounds = true
                         BitmapFactory.decodeStream(stream, null, this)
-                        inSampleSize = calculateInSampleSize(this, 80, 80)
+                        inSampleSize = calculateInSampleSize(this, 120, 120)
                         inJustDecodeBounds = false
                     }
                     stream.close()
@@ -106,7 +101,8 @@ class ImageLibXCore constructor(private val context: Context) {
                         addBitmapToCache(key, bitmap)
 
                         AppExecutors.getInstance().mainThread().execute {
-                            weakReference.get()?.setImageBitmap(bitmap)
+                            if (weakReference.get()?.tag == key) weakReference.get()?.setImageBitmap(bitmap)
+
                         }
                     }
                 }
@@ -126,8 +122,9 @@ class ImageLibXCore constructor(private val context: Context) {
         addBitmapToDiskCache(key, bitmap)
     }
 
+    @Synchronized
     private fun addBitmapToMemoryCache(key: String, bitmap: Bitmap) {
-        memoryCache.put(key, bitmap)
+            memoryCache.put(key, bitmap)
     }
 
     private fun addBitmapToDiskCache(key: String, bitmap: Bitmap) {
